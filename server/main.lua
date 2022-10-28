@@ -61,10 +61,10 @@ local function CheckMenuVersion()
         end
         VersionLog('success', ('Current Version: %s'):format(currentVersion))
         VersionLog('success', ('Latest Version: %s'):format(text))
-        if tonumber(text) <= tonumber(currentVersion) then
+        if text == currentVersion then
             VersionLog('success', 'You are running the latest version.')
         else
-            VersionLog('error', ('You are currently running an outdated version, please update to version %s.'):format(text))
+            VersionLog('error', ('You are currently running an outdated version, please update to version %s'):format(text))
         end
     end)
 end
