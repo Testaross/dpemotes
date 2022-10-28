@@ -40,6 +40,25 @@ function EmoteMenu.CloseMenu()
 end
 exports('CloseMenu', EmoteMenu.CloseMenu)
 
+---Remove multiple entries from a table
+---@param _table table
+---@param keep function
+function EmoteMenu.RemoveFromTable(_table, keep)
+    local _index = 1
+    for i = 1, #_table do
+        if keep(_table, i) then
+            if (i ~= _index) then
+                _table[_index] = _table[i]
+                _table[i] = nil
+            end
+            _index += 1
+        else
+            _table[i] = nil
+        end
+    end
+    return _table
+end
+
 ---Display a notification
 ---@param _type string
 ---@param message string
@@ -86,13 +105,9 @@ function EmoteMenu.RemoveEmotes(_type)
         'AnimalEmotes'
     }
     for i = 1, #checkMenus do
-        local animList = AnimationList[checkMenus[i]]
-        for emote = 1, #animList do
-            if animList[emote] and animList[emote][_type] then
-                --AnimationList[checkMenus[i]][emote] = nil -- This is faster but doesn't shift the element like table.remove :(
-                table.remove(AnimationList[checkMenus[i]], emote)
-            end
-        end
+        AnimationList[checkMenus[i]] = EmoteMenu.RemoveFromTable(AnimationList[checkMenus[i]], function(_table, _index)
+            return not _table[_index][_type]
+        end)
     end
 end
 
@@ -356,15 +371,9 @@ function EmoteMenu.RemoveUnsupportedEmotes()
         'AnimalEmotes'
     }
     for i = 1, #checkMenus do
-        local animList = AnimationList[checkMenus[i]]
-        for emote = 1, #animList do
-            if animList[emote] then
-                if animList[emote].Build and (animList[emote].Build < EmoteMenu.GameBuild) then
-                    --AnimationList[checkMenus[i]][emote] = nil -- This is faster but doesn't shift the element like table.remove :(
-                    table.remove(AnimationList[checkMenus[i]], emote)
-                end
-            end
-        end
+        AnimationList[checkMenus[i]] = EmoteMenu.RemoveFromTable(AnimationList[checkMenus[i]], function(_table, _index)
+            return not (_table[_index].Build and (_table[_index].Build < EmoteMenu.GameBuild))
+        end)
     end
 end
 
@@ -394,25 +403,17 @@ EmoteMenu.AddEmotesToMenu('Expressions', Config.EmotePlayCommands[1])
 if Config.EnableSynchronizedEmotes then
     EmoteMenu.AddEmotesToMenu('SynchronizedEmotes', Config.EmotePlayCommands[1])
 else
-    for i = 1, #emoteMenuOptions do
-        if emoteMenuOptions[i].args == 'SynchronizedEmotes' then
-            --emoteMenuOptions[i] = nil -- This is faster but doesn't shift the element like table.remove :(
-            table.remove(emoteMenuOptions, i)
-            break
-        end
-    end
+    emoteMenuOptions = EmoteMenu.RemoveFromTable(emoteMenuOptions, function(_table, _index)
+        return _table[_index].args ~= 'SynchronizedEmotes'
+    end)
 end
 
 if Config.EnableAnimalEmotes then
     EmoteMenu.AddEmotesToMenu('AnimalEmotes', Config.EmotePlayCommands[1])
 else
-    for i = 1, #emoteMenuOptions do
-        if emoteMenuOptions[i].args == 'AnimalEmotes' then
-            --emoteMenuOptions[i] = nil -- This is faster but doesn't shift the element like table.remove :(
-            table.remove(emoteMenuOptions, i)
-            break
-        end
-    end
+    emoteMenuOptions = EmoteMenu.RemoveFromTable(emoteMenuOptions, function(_table, _index)
+        return _table[_index].args ~= 'AnimalEmotes'
+    end)
 end
 
 -- Register Menus

@@ -40,3 +40,32 @@ RegisterNetEvent('dpemotes:syncProp', function(propNet)
     end
     srcPlayerState:set('ptfxPropNet', false, true)
 end)
+
+-- Version check
+local function VersionLog(_type, log)
+    local color = '^7'
+    if _type == 'success' then 
+        color = '^2' 
+    elseif _type == 'error' then 
+        color = '^1' 
+    end
+    print(('^5[dpemotes]%s %s^7'):format(color, log))
+end
+
+local function CheckMenuVersion()
+    PerformHttpRequest("https://raw.githubusercontent.com/scullyy/dpemotes/master/version.txt", function(err, text, headers)
+        local currentVersion = GetResourceMetadata(GetCurrentResourceName(), "version")
+        if not text then 
+            VersionLog('error', 'Currently unable to run a version check.')
+            return 
+        end
+        VersionLog('success', ('Current Version: %s'):format(currentVersion))
+        VersionLog('success', ('Latest Version: %s'):format(text))
+        if tonumber(text) <= tonumber(currentVersion) then
+            VersionLog('success', 'You are running the latest version.')
+        else
+            VersionLog('error', ('You are currently running an outdated version, please update to version %s.'):format(text))
+        end
+    end)
+end
+CheckMenuVersion()
