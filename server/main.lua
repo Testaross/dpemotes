@@ -43,18 +43,13 @@ end)
 
 -- Version check
 local function VersionLog(_type, log)
-    local color = '^7'
-    if _type == 'success' then 
-        color = '^2' 
-    elseif _type == 'error' then 
-        color = '^1' 
-    end
+    local color = _type == 'success' and '^2' or '^1'
     print(('^5[dpemotes]%s %s^7'):format(color, log))
 end
 
 local function CheckMenuVersion()
-    PerformHttpRequest("https://raw.githubusercontent.com/scullyy/dpemotes/master/version.txt", function(err, text, headers)
-        local currentVersion = GetResourceMetadata(GetCurrentResourceName(), "version")
+    PerformHttpRequest('https://raw.githubusercontent.com/scullyy/dpemotes/master/version.txt', function(err, text, headers)
+        local currentVersion = GetResourceMetadata(GetCurrentResourceName(), 'version')
         if not text then 
             VersionLog('error', 'Currently unable to run a version check.')
             return 
