@@ -37,21 +37,19 @@ For support join my discord here: https://discord.gg/scully
 
 # Exports
 
-**How to use exports:** `exports['dpemotes']:ExportName(Parameter(s))`
-
-| Export Name | Parameter(s) | Supported On | Description |
+| Export Name | Parameter(s) | Type | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| OpenMenu | None | Client | Open the menu |
-| CloseMenu | None | Client | Close the menu |
-| GetCurrentWalk | None | Client | Returns your current walk style |
-| SetWalk | Name | Client | Sets your walk style |
-| ResetWalk | None | Client | Resets your walk style to default |
-| IsInAnimation | None | Client | Check if you're playing an animation |
-| RegisterEmote | Table | Client | Register an animation from an external resource |
-| PlayRegisteredEmote | Name | Client | Play a registered animation |
-| Play | Type, Table, Prop Variant | Client | Play an animation |
-| PlayByCommand | Name, Prop Variant | Client | Play an animation using the command name |
-| CancelAnimation | None | Client | Stop playing an animation |
+| [OpenMenu](docs/exports/client/OpenMenu.md) | None | Client | Open the animation menu |
+| [CloseMenu](docs/exports/client/CloseMenu.md) | None | Client | Close the animation menu |
+| [GetCurrentWalk](docs/exports/client/GetCurrentWalk.md) | None | Client | Get the players current walk style |
+| [SetWalk](docs/exports/client/SetWalk.md) | String (Walk Name) | Client | Set the players walk style |
+| [ResetWalk](docs/exports/client/ResetWalk.md) | None | Client | Reset the players walk style to default |
+| [IsInAnimation](docs/exports/client/IsInAnimation.md) | None | Client | Check if the player is currently playing an animation |
+| [RegisterEmote](docs/exports/client/RegisterEmote.md) | Table (Emote Data) | Client | Register an animation from an external resource |
+| [PlayRegisteredEmote](docs/exports/client/PlayRegisteredEmote.md) | String (Emote Name) | Client | Play a registered animation |
+| [Play](docs/exports/client/Play.md) | String (Emote Type), Table (Emote Data), Number (Variant) | Client | Play an animation |
+| [PlayByCommand](docs/exports/client/PlayByCommand.md) | String (Emote Command), Number (Variant) | Client | Play an animation using the command |
+| [CancelAnimation](docs/exports/client/CancelAnimation.md) | None | Client | Stop playing an animation |
 
 # Menu Keybind
 
@@ -65,31 +63,9 @@ You can use the keybind command that comes with FiveM by entering the following 
 
 `bind keyboard 'Yourbutton' 'e youremote'`. To remove the keybind, type `'unbind keyboard 'Yourbutton'`.
 
-# Registering Emotes
-
-You can register emotes within other resources using the RegisterEmote export, these emotes can be played by using the PlayRegisteredEmote export.
-
-**Example:**
-```lua
-exports.dpemotes.RegisterEmote({
-    Name = 'shrug',
-    Type = 'Emote',
-    Animation = 'gesture_shrug_hard',
-    Dictionary = 'gestures@f@standing@casual',
-    Options = {
-        Duration = 1000,
-        Flags = {
-            Move = true,
-        }
-    }
-})
-
-exports.dpemotes.PlayRegisteredEmote('shrug')
-```
-
 # NSFW & Social Movement Animations
 
-NSFW and social movement animations can be toggled in the menu by setting `EnableNSFWEmotes` and `EnableSocialMovementEmotes` in the config.lua file. The emotes that are toggled are the ones flagged in the animation list with `NSFW` and `SocialMovement`.
+NSFW and social movement animations can be toggled in the menu by setting `EnableNSFWEmotes` and `EnableSocialMovementEmotes` in the config.lua file. The emotes that are toggled are the ones flagged in the animation list with `NSFW` and `SocialMovement`. NSFW animations are any animation that wouldn't be considered safe for anyone under the age of 18 to see, if you don't run an 18+ community I suggest keeping the `EnableNSFWEmotes` config option as false. The social movement animations are any kind of animation that represents a group who advocates for change in society such as the LGBTQ and BLM animations in which their communities advocate for liberation, some communities might feel as if people will use them in an ironic manner or to troll which would be disrespectful and some servers might be based in countries where it is shunned due to their bigoted religion so a config option was implemented to respect both these communities and religious beliefs.
 
 # Disclaimer & Credits
 
