@@ -6,7 +6,8 @@ EmoteMenu = {
     PtfxCanHold = false,
     PlayerProps = {},
     PlayerParticles = {},
-    Keybinds = {}
+    Keybinds = {},
+    RegisteredEmotes = {}
 }
 
 -- Menu Options
@@ -90,6 +91,30 @@ function EmoteMenu.ShowHelpAlert(icon, text)
         }
     })
 end
+
+---Register emotes to be used within external resources
+---@param _type string
+---@param emote table
+function EmoteMenu.RegisterEmote(_type, emote)
+    EmoteMenu.RegisteredEmotes[emote.Name] = emote
+end
+exports('RegisterEmote', EmoteMenu.RegisterEmote)
+
+---Play a registered emote
+---@param emote string
+function EmoteMenu.PlayRegisteredEmote(emote)
+    local registeredEmote = EmoteMenu.RegisteredEmotes[emote]
+    if not registeredEmote then
+        EmoteMenu.Notify('error', 'That isn\'t a valid registered emote, please inform the server owner')
+        return
+    end
+    if registeredEmote.Type == 'Walks' then
+        EmoteMenu.SetWalk(registeredEmote.Walk)
+    else
+        EmoteMenu.Play(registeredEmote.Type, registeredEmote, registeredEmote.Variant)
+    end
+end
+exports('PlayRegisteredEmote', EmoteMenu.PlayRegisteredEmote)
 
 ---Remove emotes from the menu
 ---@param _type string
@@ -210,7 +235,7 @@ function EmoteMenu.PlayByCommand(command, variant)
 end
 exports('PlayByCommand', EmoteMenu.PlayByCommand)
 
----Play an expression, scenario or emote
+---Play an animation
 ---@param _type string
 ---@param data table
 ---@param variation number

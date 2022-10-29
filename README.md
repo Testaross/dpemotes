@@ -47,6 +47,8 @@ For support join my discord here: https://discord.gg/scully
 | SetWalk | Name | Client | Sets your walk style |
 | ResetWalk | None | Client | Resets your walk style to default |
 | IsInAnimation | None | Client | Check if you're playing an animation |
+| RegisterEmote | Table | Client | Register an animation from an external resource |
+| PlayRegisteredEmote | Name | Client | Play a registered animation |
 | Play | Type, Table, Prop Variant | Client | Play an animation |
 | PlayByCommand | Name, Prop Variant | Client | Play an animation using the command name |
 | CancelAnimation | None | Client | Stop playing an animation |
@@ -62,6 +64,28 @@ By default the configured keybind in the *initial* config.lua will be the defaul
 You can use the keybind command that comes with FiveM by entering the following into F8:
 
 `bind keyboard 'Yourbutton' 'e youremote'`. To remove the keybind, type `'unbind keyboard 'Yourbutton'`.
+
+# Registering Emotes
+
+You can register emotes within other resources using the RegisterEmote export, these emotes can be played by using the PlayRegisteredEmote export.
+
+**Example:**
+```lua
+exports.dpemotes.RegisterEmote({
+    Name = 'shrug',
+    Type = 'Emote',
+    Animation = 'gesture_shrug_hard',
+    Dictionary = 'gestures@f@standing@casual',
+    Options = {
+        Duration = 1000,
+        Flags = {
+            Move = true,
+        }
+    }
+})
+
+exports.dpemotes.PlayRegisteredEmote('shrug')
+```
 
 # NSFW & Social Movement Animations
 
