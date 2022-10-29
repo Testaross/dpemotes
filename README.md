@@ -1,7 +1,7 @@
 <img src='https://cdn.discordapp.com/attachments/614186484248870943/1033139013579706498/unknown.png' width='750'>
 
 # Previews
-<img src='https://i.gyazo.com/af21b872ab0d5aaa476cf069a4b868c5.png'><img src='https://i.gyazo.com/669c5e3889076eebc8eda518325a949e.png'>
+<img src='https://i.gyazo.com/2e415778c4ddbd22975433f358a4c066.png'><img src='https://i.gyazo.com/a3cd8e4bfbca1d5cbb0ad9a477ae3965.png'>
 
 # Support:
 

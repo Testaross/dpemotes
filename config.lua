@@ -15,8 +15,6 @@ Config = {
     MenuKeybind = 'f5', -- List of keys here: https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/
     -- You can change the menu position here.
     MenuPosition = 'top-right', -- (top-left, top-right, bottom-left, bottom-right)
-    -- Set to '' to disable the description.
-    MenuDescription = 'https://discord.gg/scully', -- This will be removed once this is put on a release version: https://github.com/overextended/ox_lib/commit/1127108fcd45f90977dfab32197e56e1e6752e3b
     -- You can change the notification position here
     NotificationPosition = 'top', -- (top, bottom, top-left, top-right, bottom-left, bottom-right)
     -- You can change the help alert position here

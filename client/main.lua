@@ -11,20 +11,20 @@ EmoteMenu = {
 }
 
 -- Menu Options
-local mainMenuOptions, emoteMenuOptions = {
+local mainMenuOptions, emoteMenuOptions = { -- placeholder descriptions are currently required for the item list descriptions.
     -- Main Menu
-    {label = 'Emote Menu', description = Config.MenuDescription, icon = 'fa-solid fa-person', args = 'animations_emote_menu'},
-    {label = 'Walking Styles', description = Config.MenuDescription, icon = 'fa-solid fa-person-walking', values = {}, args = 'Walks', close = false},
-    {label = 'Scenarios', description = Config.MenuDescription, icon = 'fa-solid fa-person-walking-with-cane', values = {}, args = 'Scenarios', close = false},
-    {label = 'Facial Expressions', description = Config.MenuDescription, icon = 'fa-solid fa-face-angry', values = {}, args = 'Expressions', close = false},
-    {label = 'Cancel', description = Config.MenuDescription, values = {'Emote', 'Walk Style', 'Expression', 'All'}, icon = 'fa-solid fa-ban', args = 'cancel', close = false}
+    {label = 'Emote Menu', description = 'Open the emote menu', icon = 'fa-solid fa-person', args = 'animations_emote_menu'},
+    {label = 'Walking Styles', description = 'placeholder', icon = 'fa-solid fa-person-walking', values = {}, args = 'Walks', close = false},
+    {label = 'Scenarios', description = 'placeholder', icon = 'fa-solid fa-person-walking-with-cane', values = {}, args = 'Scenarios', close = false},
+    {label = 'Facial Expressions', description = 'placeholder', icon = 'fa-solid fa-face-angry', values = {}, args = 'Expressions', close = false},
+    {label = 'Cancel', description = 'placeholder', values = {{label = 'Emote', description = 'Cancel your emote'}, {label = 'Walk Style', description = 'Reset your walk style'}, {label = 'Expression', description = 'Reset your expression'}, {label = 'All', description = 'Cancel and reset everything'}}, icon = 'fa-solid fa-ban', args = 'cancel', close = false}
 }, {
     -- Emote Menu
-    {label = 'Emotes', description = Config.MenuDescription, icon = 'fa-solid fa-person-walking', values = {}, args = 'Emotes', close = false},
-    {label = 'Prop Emotes', description = Config.MenuDescription, icon = 'fa-solid fa-person-hiking', values = {}, args = 'PropEmotes', close = false},
-    {label = 'Dance Emotes', description = Config.MenuDescription, icon = 'fa-solid fa-person-running', values = {}, args = 'DanceEmotes', close = false},
-    {label = 'Synchronized Emotes', description = Config.MenuDescription, icon = 'fa-solid fa-people-carry', values = {}, args = 'SynchronizedEmotes', close = false},
-    {label = 'Animal Emotes', description = Config.MenuDescription, icon = 'fa-solid fa-dog', values = {}, args = 'AnimalEmotes', close = false}
+    {label = 'Emotes', description = 'placeholder', icon = 'fa-solid fa-person-walking', values = {}, args = 'Emotes', close = false},
+    {label = 'Prop Emotes', description = 'placeholder', icon = 'fa-solid fa-person-hiking', values = {}, args = 'PropEmotes', close = false},
+    {label = 'Dance Emotes', description = 'placeholder', icon = 'fa-solid fa-person-running', values = {}, args = 'DanceEmotes', close = false},
+    {label = 'Synchronized Emotes', description = 'placeholder', icon = 'fa-solid fa-people-carry', values = {}, args = 'SynchronizedEmotes', close = false},
+    {label = 'Animal Emotes', description = 'placeholder', icon = 'fa-solid fa-dog', values = {}, args = 'AnimalEmotes', close = false}
 }
 
 -- Functions
@@ -145,7 +145,7 @@ function EmoteMenu.AddEmotesToMenu(_type, command)
             for emote = 1, #AnimationList[_type] do
                 local _emote = AnimationList[_type][emote]
                 if _emote then
-                    mainMenuOptions[option].values[#mainMenuOptions[option].values + 1] = ('%s (%s %s)'):format(_emote.Label, command, _emote.Command)
+                    mainMenuOptions[option].values[#mainMenuOptions[option].values + 1] = {label = _emote.Label, description = ('%s %s'):format(command, _emote.Command)}
                 end
             end
             break
@@ -156,7 +156,7 @@ function EmoteMenu.AddEmotesToMenu(_type, command)
             for emote = 1, #AnimationList[_type] do
                 local _emote = AnimationList[_type][emote]
                 if _emote then
-                    emoteMenuOptions[option].values[#emoteMenuOptions[option].values + 1] = ('%s (%s %s)'):format(_emote.Label, command, _emote.Command)
+                    emoteMenuOptions[option].values[#emoteMenuOptions[option].values + 1] = {label = _emote.Label, description = ('%s %s'):format(command, _emote.Command)}
                 end
             end
             break
