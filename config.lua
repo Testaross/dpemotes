@@ -7,8 +7,6 @@ Config = {
     CrouchKey = 'c', -- List of keys here: https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/
     -- Set this if you really wanna disable emotes in vehicles, if enabled they only play the upper body part of the emote.
     AllowedInVehicles = true,
-    -- Command to open the add emote menu.
-    AddEmoteMenuCommand = 'eadd',
     -- Commands to play an emote.
     EmotePlayCommands = {'e', 'emote', 'eplay'},
     -- Commands to set a walk style.
