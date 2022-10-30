@@ -40,8 +40,8 @@ AnimationList.Scenarios = {
         Scenario = 'WORLD_HUMAN_CLIPBOARD',
     },
     {
-        Label = 'Cop',
-        Command = 'cop',
+        Label = 'Idle Cop',
+        Command = 'idlecop',
         Scenario = 'WORLD_HUMAN_COP_IDLES',
     },
     {

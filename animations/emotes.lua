@@ -415,7 +415,7 @@ AnimationList.Emotes = {
     },
     {
         Label = 'Cop Stand',
-        Command = 'cop2',
+        Command = 'copstand',
         Animation = 'rcmme_amanda1_stand_loop_cop',
         Dictionary = 'anim@amb@nightclub@peds@',
         Options = {
@@ -426,7 +426,7 @@ AnimationList.Emotes = {
     },
     {
         Label = 'Cop Investigate',
-        Command = 'cop3',
+        Command = 'copinv',
         Animation = 'idle_b',
         Dictionary = 'amb@code_human_police_investigate@idle_a',
         Options = {

@@ -15,6 +15,7 @@ EmoteMenu = {
 -- Menu Options
 local mainMenuOptions, emoteMenuOptions = { -- placeholder descriptions are currently required for the item list descriptions.
     -- Main Menu
+    {label = 'Search', description = 'Search for animations', icon = 'fa-solid fa-magnifying-glass', args = 'animations_search'},
     {label = 'Emote Menu', description = 'Open the emote menu', icon = 'fa-solid fa-person', args = 'animations_emote_menu'},
     {label = 'Walking Styles', description = 'placeholder', icon = 'fa-solid fa-person-walking', values = {}, args = 'Walks', close = false},
     {label = 'Scenarios', description = 'placeholder', icon = 'fa-solid fa-person-walking-with-cane', values = {}, args = 'Scenarios', close = false},
@@ -111,7 +112,7 @@ end
 ---Register emotes to be used within external resources
 ---@param _type string
 ---@param emote table
-function EmoteMenu.RegisterEmote(_type, emote)
+function EmoteMenu.RegisterEmote(emote)
     EmoteMenu.RegisteredEmotes[emote.Name] = emote
 end
 exports('RegisterEmote', EmoteMenu.RegisterEmote)
@@ -418,6 +419,70 @@ function EmoteMenu.RemoveUnsupportedEmotes()
     end
 end
 
+---Search for animations
+---@param query string
+function EmoteMenu.Search(query)
+    Wait(500)
+    local checkMenus, foundEmotes = {
+        'Walks',
+        'Scenarios',
+        'Expressions',
+        'Emotes',
+        'PropEmotes',
+        'DanceEmotes',
+        'SynchronizedEmotes',
+        'AnimalEmotes'
+    }, {}
+    for i = 1, #checkMenus do
+        local animType = checkMenus[i]
+        local animList = AnimationList[animType]
+        if animList then
+            for emote = 1, #animList do
+                local anim = animList[emote]
+                if anim and (anim.Command and string.find(string.lower(anim.Command), query)) then
+                    anim.CommandHandle = animType == 'Walks' and Config.WalkSetCommands[1] or Config.EmotePlayCommands[1]
+                    anim.Type = animType
+                    foundEmotes[#foundEmotes + 1] = anim
+                end
+            end
+        end
+    end
+    if #foundEmotes < 1 then
+        EmoteMenu.Notify('error', 'No animations found')
+        lib.showMenu('animations_main_menu')
+        return
+    end
+    local options = {}
+    for emote = 1, #foundEmotes do
+        local _emote = foundEmotes[emote]
+        if _emote then
+            options[#options + 1] = {label = _emote.Label, description = ('%s %s / (%s)'):format(_emote.CommandHandle, _emote.Command, _emote.Type), icon = 'fa-solid fa-person', args = _emote.Command, close = false}
+        end
+    end
+    lib.registerMenu({
+        id = 'animations_search_menu',
+        title = 'Animation Menu',
+        position = Config.MenuPosition,
+        options = options,
+        onClose = function(_)
+            lib.showMenu('animations_main_menu')
+        end,
+    }, function(selected, scrollIndex, option)
+        if EmoteMenu.isActionsLimited then return end
+        local _type, emote = EmoteMenu.GetEmoteByCommand(option)
+        if not _type then
+            EmoteMenu.Notify('error', 'That isn\'t a valid emote or walk style')
+            return
+        end
+        if _type == 'Walks' then
+            EmoteMenu.SetWalk(emote.Walk)
+        else
+            EmoteMenu.Play(_type, emote)
+        end
+    end)
+    lib.showMenu('animations_search_menu')
+end
+
 -- Add / Remove animations
 EmoteMenu.RemoveUnsupportedEmotes()
 
@@ -440,6 +505,12 @@ EmoteMenu.AddEmotesToMenu('Walks', Config.WalkSetCommands[1])
 EmoteMenu.AddEmotesToMenu('Scenarios', Config.EmotePlayCommands[1])
 
 EmoteMenu.AddEmotesToMenu('Expressions', Config.EmotePlayCommands[1])
+
+if not Config.EnableSearch then
+    mainMenuOptions = EmoteMenu.RemoveFromTable(mainMenuOptions, function(_table, _index)
+        return _table[_index].args ~= 'animations_search'
+    end)
+end
 
 if Config.EnableSynchronizedEmotes then
     EmoteMenu.AddEmotesToMenu('SynchronizedEmotes', Config.EmotePlayCommands[1])
@@ -466,7 +537,12 @@ lib.registerMenu({
     options = mainMenuOptions,
 }, function(selected, scrollIndex, option)
     if EmoteMenu.isActionsLimited then return end
-    if option == 'animations_emote_menu' then
+    if option == 'animations_search' then
+        local query = lib.inputDialog('Animation Search', {'Animation'})
+        if not query then return end
+        EmoteMenu.Search(string.lower(query[1]))
+        return
+    elseif option == 'animations_emote_menu' then
         lib.showMenu('animations_emote_menu')
         return
     elseif option == 'cancel' then

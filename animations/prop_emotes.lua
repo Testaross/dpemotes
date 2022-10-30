@@ -1391,8 +1391,8 @@ AnimationList.PropEmotes = {
         },
     },
     {
-        Label = 'Cop 4',
-        Command = 'cop4',
+        Label = 'Cop Wand',
+        Command = 'copwand',
         Animation = 'base',
         Dictionary = 'amb@world_human_car_park_attendant@male@base',
         Options = {

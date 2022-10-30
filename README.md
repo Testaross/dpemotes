@@ -17,6 +17,8 @@ For support join my discord here: https://discord.gg/scully
 
 # Features
 
+- Search option
+
 - Custom animations
 
 - Animal Emotes

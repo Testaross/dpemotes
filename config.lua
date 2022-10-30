@@ -1,4 +1,6 @@
 Config = {
+    -- You can disable the search option here.
+    EnableSearch = true,
     -- Set this to '' to disable the key.
     CancelEmoteKey = 'x', -- List of keys here: https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/
     -- Set this to '' to disable the key.
