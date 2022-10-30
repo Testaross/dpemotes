@@ -27,6 +27,7 @@ client_scripts {
     'animations/walks.lua',
     'animations/scenarios.lua',
     'animations/expressions.lua',
+    'animations.lua',
     'client/*.lua'
 }
 

@@ -35,6 +35,10 @@ For support join my discord here: https://discord.gg/scully
 
 - Prop variation support
 
+- Hands up and crouching
+
+- Commands
+
 # Exports
 
 | Export Name | Parameter(s) | Type | Description |
@@ -50,6 +54,8 @@ For support join my discord here: https://discord.gg/scully
 | [Play](docs/exports/client/Play.md) | String (Emote Type), Table (Emote Data), Number (Variant) | Client | Play an animation |
 | [PlayByCommand](docs/exports/client/PlayByCommand.md) | String (Emote Command), Number (Variant) | Client | Play an animation using the command |
 | [CancelAnimation](docs/exports/client/CancelAnimation.md) | None | Client | Stop playing an animation |
+| [IsLimited](docs/exports/client/IsLimited.md) | None | Client | Check if the player is currently limited |
+| [ToggleLimitation](docs/exports/client/ToggleLimitation.md) | Boolean (Limited) | Client | Toggle player limitations |
 
 # Menu Keybind
 

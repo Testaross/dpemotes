@@ -1,8 +1,10 @@
 EmoteMenu = {
     GameBuild = GetGameBuildNumber(),
     CurrentWalk = GetResourceKvpString('animations_walkstyle') or 'default', -- Waiting on https://github.com/citizenfx/fivem/pull/1644 to be merged to improve this.
+    isActionsLimited = false,
     IsPlayingAnimation = false,
     IsRagdoll = false,
+    IsCrouched = false,
     PtfxCanHold = false,
     PlayerProps = {},
     PlayerParticles = {},
@@ -40,6 +42,20 @@ function EmoteMenu.CloseMenu()
     lib.hideMenu()
 end
 exports('CloseMenu', EmoteMenu.CloseMenu)
+
+---Toggle player limitations
+---@param limited boolean
+function EmoteMenu.ToggleLimitation(limited)
+    EmoteMenu.isActionsLimited = limited
+end
+exports('ToggleLimitation', EmoteMenu.ToggleLimitation)
+
+---Check if the player is currently limited
+---@return boolean
+function EmoteMenu.IsLimited()
+    return EmoteMenu.isActionsLimited
+end
+exports('IsLimited', EmoteMenu.IsLimited)
 
 ---Remove multiple entries from a table
 ---@param _table table
@@ -449,6 +465,7 @@ lib.registerMenu({
     position = Config.MenuPosition,
     options = mainMenuOptions,
 }, function(selected, scrollIndex, option)
+    if EmoteMenu.isActionsLimited then return end
     if option == 'animations_emote_menu' then
         lib.showMenu('animations_emote_menu')
         return
@@ -488,6 +505,7 @@ lib.registerMenu({
         lib.showMenu('animations_main_menu')
     end,
 }, function(selected, scrollIndex, option)
+    if EmoteMenu.isActionsLimited then return end
     local emote = AnimationList[option][scrollIndex]
     if not emote then
         EmoteMenu.Notify('error', 'That isn\'t a valid emote')
@@ -503,12 +521,14 @@ end)
 -- Commands
 for i = 1, #Config.MenuOpenCommands do
     RegisterCommand(Config.MenuOpenCommands[i], function(source, args, rawCommand)
+        if EmoteMenu.isActionsLimited then return end
         EmoteMenu.OpenMenu()
     end)
 end
 
 for i = 1, #Config.EmotePlayCommands do
     RegisterCommand(Config.EmotePlayCommands[i], function(source, args, rawCommand)
+        if EmoteMenu.isActionsLimited then return end
         if not args[1] then
             EmoteMenu.Notify('error', 'You need to provide a valid emote!')
             return
@@ -533,6 +553,7 @@ end
 
 for i = 1, #Config.WalkSetCommands do
     RegisterCommand(Config.WalkSetCommands[i], function(source, args, rawCommand)
+        if EmoteMenu.isActionsLimited then return end
         if not args[1] then
             EmoteMenu.Notify('error', 'You need to provide a valid emote!')
             return
@@ -574,11 +595,51 @@ if Config.RagdollKeybind ~= '' then
         description = 'Ragdoll your character',
         defaultKey = Config.RagdollKeybind,
         onPressed = function(key)
+            if EmoteMenu.isActionsLimited then return end
             EmoteMenu.IsRagdoll = not EmoteMenu.IsRagdoll
             while EmoteMenu.IsRagdoll do
                 Wait(0)
                 if IsPedOnFoot(cache.ped) then
                     SetPedToRagdoll(cache.ped, 1000, 1000, 0, 0, 0, 0)
+                end
+            end
+        end
+    })
+end
+
+if Config.HandsUpKey ~= '' then
+    EmoteMenu.Keybinds.HandsUp = lib.addKeybind({
+        name = 'handsup',
+        description = 'Put your hands up',
+        defaultKey = Config.HandsUpKey,
+        onPressed = function(key)
+            if EmoteMenu.isActionsLimited then return end
+            lib.requestAnimDict('random@mugging3', 1000)
+            TaskPlayAnim(cache.ped, 'random@mugging3', 'handsup_standing_base', 8.0, 8.0, -1, 50, 0, false, false, false)
+        end,
+        onReleased = function(key)
+            ClearPedTasks(cache.ped)
+        end
+    })
+end
+
+if Config.CrouchKey ~= '' then
+    EmoteMenu.Keybinds.Crouch = lib.addKeybind({
+        name = 'crouch',
+        description = 'Crouch',
+        defaultKey = Config.CrouchKey,
+        onPressed = function(key)
+            if EmoteMenu.isActionsLimited or IsPedSittingInAnyVehicle(cache.ped) then return end
+            EmoteMenu.IsCrouched = not EmoteMenu.IsCrouched
+            if not EmoteMenu.IsCrouched then
+                lib.requestAnimSet('move_ped_crouched', 1000)
+                SetPedMovementClipset(cache.ped, 'move_ped_crouched', 0.2)
+            else
+                if EmoteMenu.CurrentWalk == 'default' then
+                    ResetPedMovementClipset(cache.ped, 0.2)
+                else
+                    lib.requestAnimSet(EmoteMenu.CurrentWalk, 1000)
+                    SetPedMovementClipset(cache.ped, EmoteMenu.CurrentWalk, 0.2)
                 end
             end
         end
