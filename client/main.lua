@@ -413,9 +413,11 @@ function EmoteMenu.RemoveUnsupportedEmotes()
         'AnimalEmotes'
     }
     for i = 1, #checkMenus do
-        AnimationList[checkMenus[i]] = EmoteMenu.RemoveFromTable(AnimationList[checkMenus[i]], function(_table, _index)
-            return not (_table[_index].Build and (_table[_index].Build < EmoteMenu.GameBuild))
-        end)
+        if AnimationList[checkMenus[i]] then
+            AnimationList[checkMenus[i]] = EmoteMenu.RemoveFromTable(AnimationList[checkMenus[i]], function(_table, _index)
+                return not (_table[_index].Build and (_table[_index].Build < EmoteMenu.GameBuild))
+            end) 
+        end
     end
 end
 
