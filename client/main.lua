@@ -1,4 +1,5 @@
 EmoteMenu = {
+    PlayerId = PlayerId(),
     GameBuild = GetGameBuildNumber(),
     CurrentWalk = GetResourceKvpString('animations_walkstyle') or 'default', -- Waiting on https://github.com/citizenfx/fivem/pull/1644 to be merged to improve this.
     isActionsLimited = false,
@@ -231,7 +232,7 @@ function EmoteMenu.RequestSynchronizedEmote(data)
         EmoteMenu.Notify('error', 'No player nearby!')
         return
     end
-    local _type, emote = EmoteMenu.GetEmoteByCommand(data.Options.Synchronized.OtherAnimation)
+    local _type, emote = EmoteMenu.GetEmoteByCommand(data.Options.OtherAnimation)
     if _type ~= 'SynchronizedEmotes' then
         EmoteMenu.Notify('error', 'That isn\'t a valid synchronized emote, please inform the server owner')
         return
@@ -355,7 +356,7 @@ function EmoteMenu.CancelAnimation()
         EmoteMenu.IsPlayingAnimation = false
     end
 end
-exports('CancelEmote', EmoteMenu.CancelAnimation)
+exports('CancelAnimation', EmoteMenu.CancelAnimation)
 
 ---Get the players current walk style
 ---@return string
@@ -773,7 +774,7 @@ RegisterNetEvent('dpemotes:synchronizedEmoteRequest', function(sender, data, emo
         Wait(0)
         if IsControlJustPressed(0, 246) then
             lib.hideTextUI()
-            Citizen.InvokeNative(0x144da052257ae7d8, true) -- Enable networked syncing of the player
+            Citizen.InvokeNative(0x144da052257ae7d8, true)
             TriggerServerEvent('dpemotes:synchronizedEmoteResponse', sender, data, emote)
             break  
         elseif IsControlJustPressed(0, 182) then
@@ -783,7 +784,7 @@ RegisterNetEvent('dpemotes:synchronizedEmoteRequest', function(sender, data, emo
     end
 end)
 
-RegisterNetEvent('dpemotes:startSynchronizedEmoteOnTarget', function(target, data, other)
+RegisterNetEvent('dpemotes:startSynchronizedEmote', function(target, data, other)
     local playerPos = GetEntityCoords(cache.ped)
     local targetId, targetPed, targetPos = lib.getClosestPlayer(playerPos, 5.0, false)
     if not targetId then
@@ -798,58 +799,25 @@ RegisterNetEvent('dpemotes:startSynchronizedEmoteOnTarget', function(target, dat
         return
     end
 
-    if not other.Options.Synchronized.Attach and data.Options.Synchronized.Attach then
-        local bone, placement, rotation = -1, vector3(0.0, 0.0, 0.0), vector3(0.0, 0.0, 0.0)
-        if data.Options and data.Options.Synchronized then
-            local _placement = data.Options.Synchronized.Placement
-            bone = data.Options.Synchronized.Bone or -1
-            if _placement then
-                placement, rotation = _placement[1], _placement[2]
-            end
-        end
-
-        AttachEntityToEntity(cache.ped, targetPed, GetPedBoneIndex(targetPed, bone), placement.x, placement.y, placement.z, rotation.x, rotation.y, rotation.y, false, false, false, true, 1, true)
-    end
-    EmoteMenu.Play('SharedEmotes', data)
-end)
-
-RegisterNetEvent('dpemotes:startSynchronizedEmoteOnSource', function(target, data)
-    local playerPos = GetEntityCoords(cache.ped)
-    local targetId, targetPed, targetPos = lib.getClosestPlayer(playerPos, 5.0, false)
-    if not targetId then
-        EmoteMenu.Notify('error', 'No player nearby!')
-        TriggerServerEvent('dpemotes:cancelSynchronizedEmote', target)
+    local isOneValid, isTwoValid = lib.requestAnimDict(data.Dictionary, 1000), lib.requestAnimDict(other.Dictionary, 1000)
+    if not isOneValid or not isTwoValid then
+        EmoteMenu.Notify('error', 'That isn\'t a valid emote')
         return
     end
 
-    if targetId ~= GetPlayerFromServerId(target) then
-        EmoteMenu.Notify('error', 'The player is no longer closest to you!')
-        TriggerServerEvent('dpemotes:cancelSynchronizedEmote', target)
-        return
-    end
+    Citizen.InvokeNative(0x144da052257ae7d8, true)
+    local targetOffset = GetOffsetFromEntityInWorldCoords(targetPed, data.Options.Offset.x, data.Options.Offset.y, data.Options.Offset.z)
+    local synchronized_scene = NetworkCreateSynchronisedScene(targetOffset.x, targetOffset.y, targetOffset.z, 0.0, 0.0, GetEntityHeading(targetPed), 2, false, false, 1.0, -1, 1.0)
+    NetworkAddPedToSynchronisedScene(cache.ped, synchronized_scene, data.Dictionary, data.Animation, 1.5, -4.0, 1, 16, 0, 0)
+    NetworkAddPedToSynchronisedScene(targetPed, synchronized_scene, other.Dictionary, other.Animation, 1.5, -4.0, 1, 16, 0, 0)
 
-    if data.Options.Synchronized.Attach then
-        local bone, placement, rotation = -1, vector3(0.0, 0.0, 0.0), vector3(0.0, 0.0, 0.0)
-        if data.Options and data.Options.Synchronized then
-            local _placement = data.Options.Synchronized.Placement
-            bone = data.Options.Synchronized.Bone or -1
-            if _placement then
-                placement, rotation = _placement[1], _placement[2]
-            end
-        end
-
-        AttachEntityToEntity(cache.ped, targetPed, GetPedBoneIndex(targetPed, bone), placement.x, placement.y, placement.z, rotation.x, rotation.y, rotation.y, false, false, false, true, 1, true)
-    end
-
-    local offsetPos = GetOffsetFromEntityInWorldCoords(targetPed, data.Options.Synchronized.SideOffset or 0.0, data.Options.Synchronized.FrontOffset or 1.0, 0.0)
-    local heading = GetEntityHeading(targetPed)
-    SetEntityHeading(cache.ped, heading - 180.1)
-    SetEntityCoordsNoOffset(cache.ped, offsetPos.x, offsetPos.y, offsetPos.z, 0)
-
-    EmoteMenu.Play('SharedEmotes', data)
+    NetworkStartSynchronisedScene(synchronized_scene)
+    Wait(GetAnimDuration(data.Dictionary, data.Animation) * 1000)
+    NetworkStopSynchronisedScene(synchronized_scene)
 end)
 
 RegisterNetEvent('dpemotes:cancelSynchronizedEmote', function()
+    Citizen.InvokeNative(0x144da052257ae7d8, false)
     EmoteMenu.Notify('error', 'The emote was cancelled!')
 end)
 
@@ -866,6 +834,15 @@ AddEventHandler('playerSpawned', function()
     Wait(1000)
     if EmoteMenu.CurrentWalk ~= 'default' then
         EmoteMenu.SetWalk(EmoteMenu.CurrentWalk)
+    end
+end)
+
+AddEventHandler('entityDamaged', function(entity)
+    if cache.ped == entity then
+        if not IsPedFatallyInjured(EmoteMenu.PlayerId, 1) then return end 
+        EmoteMenu.RemoveProps()
+        ClearPedTasksImmediately(cache.ped)
+        DetachEntity(cache.ped, true, false)
     end
 end)
 

@@ -5,8 +5,7 @@ end)
 
 RegisterNetEvent('dpemotes:synchronizedEmoteResponse', function(sender, data, emote)
     local src = source
-    TriggerClientEvent('dpemotes:startSynchronizedEmoteOnSource', sender, src, data)
-    TriggerClientEvent('dpemotes:startSynchronizedEmoteOnTarget', src, sender, emote, data)
+    TriggerClientEvent('dpemotes:startSynchronizedEmote', src, sender, emote, data)
 end)
 
 RegisterNetEvent('dpemotes:cancelSynchronizedEmote', function(target)
