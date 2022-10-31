@@ -1,5 +1,4 @@
 EmoteMenu = {
-    PlayerId = PlayerId(),
     GameBuild = GetGameBuildNumber(),
     CurrentWalk = GetResourceKvpString('animations_walkstyle') or 'default', -- Waiting on https://github.com/citizenfx/fivem/pull/1644 to be merged to improve this.
     isActionsLimited = false,
@@ -839,7 +838,7 @@ end)
 
 AddEventHandler('entityDamaged', function(entity)
     if cache.ped == entity then
-        if not IsPedFatallyInjured(EmoteMenu.PlayerId, 1) then return end 
+        if not IsPedFatallyInjured(cache.ped, 1) then return end 
         EmoteMenu.RemoveProps()
         ClearPedTasksImmediately(cache.ped)
         DetachEntity(cache.ped, true, false)
