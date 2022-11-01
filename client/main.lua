@@ -685,6 +685,8 @@ if Config.RagdollKeybind ~= '' then
     })
 end
 
+local handsUp = false
+
 if Config.HandsUpKey ~= '' then
     EmoteMenu.Keybinds.HandsUp = lib.addKeybind({
         name = 'handsup',
@@ -692,14 +694,20 @@ if Config.HandsUpKey ~= '' then
         defaultKey = Config.HandsUpKey,
         onPressed = function(key)
             if EmoteMenu.isActionsLimited then return end
-            lib.requestAnimDict('random@mugging3', 1000)
-            TaskPlayAnim(cache.ped, 'random@mugging3', 'handsup_standing_base', 8.0, 8.0, -1, 50, 0, false, false, false)
+            lib.requestAnimDict('missminuteman_1ig_2', 1000)
+            TaskPlayAnim(cache.ped, "missminuteman_1ig_2", "handsup_enter", 8.0, 8.0, -1, 50, 0, false, false, false)
+            handsUp = true
+            LocalPlayer.state:set('handsup', true, true)
         end,
         onReleased = function(key)
-            ClearPedTasks(cache.ped)
+            handsUp = false
+            LocalPlayer.state:set('handsup', false, true)
+            StopAnimTask(PlayerPedId(), "missminuteman_1ig_2", "handsup_enter", 2.0)
         end
     })
 end
+
+exports('getHandsup', function() return handsUp end)
 
 if Config.CrouchKey ~= '' then
     EmoteMenu.Keybinds.Crouch = lib.addKeybind({
